@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StepAce 1.5 — Music Prompting Lexicon</title>
+  <meta name="description" content="A comprehensive index of musical terminology for AI music generation with StepAce 1.5.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060606;
+      --fg: #f0ede8;
+      --mid: #282828;
+      --dim: #141414;
+      --muted: #3c3c3c;
+      --ghost: #1a1a1a;
+      --display: 'Bebas Neue', sans-serif;
+      --mono: 'IBM Plex Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--fg); color: var(--bg); }
+
+    /* ─── SCROLL PROGRESS ─── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 1px;
+      background: var(--fg);
+      z-index: 200;
+      width: 0%;
+      transition: width 0.08s linear;
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 580px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: clamp(2rem, 5vw, 5rem) clamp(2rem, 5vw, 5rem) clamp(3rem, 6vw, 6rem);
+      overflow: hidden;
+      border-bottom: 1px solid var(--mid);
+    }
+
+    #hero-parallax {
+      position: absolute;
+      top: -10%;
+      left: -2%;
+      width: 110%;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      font-family: var(--display);
+      font-size: clamp(140px, 19vw, 340px);
+      line-height: 0.86;
+      letter-spacing: -0.01em;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--ghost);
+      white-space: nowrap;
+      opacity: 1;
+    }
+
+    #hero-dot {
+      position: absolute;
+      top: clamp(2rem, 5vw, 5rem);
+      right: clamp(2rem, 5vw, 5rem);
+      text-align: right;
+    }
+
+    .hero-stat-num {
+      font-family: var(--display);
+      font-size: clamp(72px, 9vw, 140px);
+      line-height: 1;
+      color: var(--ghost);
+      letter-spacing: 0.02em;
+      display: block;
+    }
+
+    .hero-stat-label {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: #2e2e2e;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .hero-kicker {
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      color: #3a3a3a;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(52px, 8.5vw, 128px);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      color: var(--fg);
+      margin-bottom: 2rem;
+    }
+
+    .hero-desc {
+      font-size: 12px;
+      color: #484848;
+      max-width: 500px;
+      line-height: 1.8;
+      font-weight: 300;
+      letter-spacing: 0.03em;
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      right: clamp(2rem, 5vw, 5rem);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: #2a2a2a;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-scroll-hint::before {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 40px;
+      background: #222;
+      animation: tickDown 2s ease-in-out infinite;
+    }
+
+    @keyframes tickDown {
+      0%, 100% { transform: scaleY(1); opacity: 0.4; }
+      50%       { transform: scaleY(0.5); opacity: 1; }
+    }
+
+    /* ─── SEARCH BAR ─── */
+    #search-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6,6,6,0.97);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--mid);
+      padding: 0 clamp(2rem, 5vw, 5rem);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .search-glyph {
+      font-size: 20px;
+      color: #505050;
+      flex-shrink: 0;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    #search {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 1.1rem 0;
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--fg);
+      letter-spacing: 0.06em;
+      font-weight: 400;
+    }
+
+    #search::placeholder { color: #282828; }
+
+    #search-meta {
+      font-size: 10px;
+      color: #505050;
+      letter-spacing: 0.12em;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ─── INDEX ─── */
+    #index-section {
+      padding: 0 clamp(2rem, 5vw, 5rem) 10rem;
+    }
+
+    /* ─── CATEGORY ─── */
+    .cat {
+      border-bottom: 1px solid var(--ghost);
+    }
+
+    .cat-header {
+      display: grid;
+      grid-template-columns: 52px 1fr auto 28px;
+      align-items: center;
+      gap: clamp(1rem, 2.5vw, 2.5rem);
+      padding: clamp(1.5rem, 2.5vw, 2.2rem) 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cat-num {
+      font-family: var(--display);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      color: #404040;
+      padding-top: 4px;
+    }
+
+    .cat-name {
+      font-family: var(--display);
+      font-size: clamp(22px, 3.2vw, 46px);
+      letter-spacing: 0.03em;
+      color: #606060;
+      transition: color 0.25s;
+      line-height: 1;
+    }
+
+    .cat.open .cat-name,
+    .cat-header:hover .cat-name { color: var(--fg); }
+
+    .cat-tally {
+      font-size: 10px;
+      color: #484848;
+      letter-spacing: 0.12em;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    .cat-toggle {
+      width: 26px;
+      height: 26px;
+      border: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-size: 18px;
+      font-weight: 300;
+      transition: all 0.25s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .cat.open .cat-toggle {
+      transform: rotate(45deg);
+      border-color: #555;
+      color: var(--fg);
+    }
+
+    .cat-body {
+      display: none;
+      padding-bottom: 2.5rem;
+      padding-left: calc(52px + clamp(1rem, 2.5vw, 2.5rem));
+    }
+
+    .cat.open .cat-body { display: block; }
+
+    /* ─── SUBSECTIONS ─── */
+    .subhead {
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #505050;
+      margin: 1.75rem 0 0.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--ghost);
+    }
+
+    .subhead:first-child { margin-top: 0; }
+
+    /* ─── TERMS ─── */
+    .terms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .term {
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border: 1px solid #2e2e2e;
+      color: #909090;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--mono);
+      font-weight: 300;
+      white-space: nowrap;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .term:hover {
+      border-color: var(--fg);
+      color: var(--bg);
+      background: var(--fg);
+    }
+
+    .term.hi {
+      border-color: var(--fg);
+      color: #c0c0c0;
+    }
+
+    .term.selected {
+      border-color: var(--fg);
+      color: var(--bg);
+      background: var(--fg);
+    }
+
+    .term.selected:hover {
+      opacity: 0.75;
+    }
+
+    /* ─── PROMPT BOX ─── */
+    #prompt-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid #2a2a2a;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 0 clamp(2rem, 5vw, 5rem);
+    }
+
+    #prompt-dock.visible {
+      transform: translateY(0);
+    }
+
+    #prompt-dock-inner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      min-height: 64px;
+    }
+
+    #prompt-label {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      color: #404040;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    #prompt-text {
+      flex: 1;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: #c8c8c8;
+      line-height: 1.6;
+      word-break: break-word;
+      overflow-y: auto;
+      max-height: 80px;
+    }
+
+    #prompt-count {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: #383838;
+      flex-shrink: 0;
+    }
+
+    .prompt-btn {
+      flex-shrink: 0;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border: 1px solid #2e2e2e;
+      color: #666;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .prompt-btn:hover {
+      border-color: var(--fg);
+      color: var(--fg);
+    }
+
+    #copy-btn.copied {
+      border-color: #4caf50;
+      color: #4caf50;
+    }
+
+    #clear-btn:hover {
+      border-color: #ff4444;
+      color: #ff4444;
+    }
+
+    /* ─── NO RESULTS ─── */
+    .no-results {
+      padding: 5rem 0;
+      font-size: 11px;
+      color: #272727;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* ─── DIVIDER ─── */
+    .section-label {
+      padding: 3rem 0 1.5rem;
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      color: #222;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--ghost);
+      margin-bottom: 0;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--ghost);
+      padding: clamp(2rem, 4vw, 4rem) clamp(2rem, 5vw, 5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-title {
+      font-family: var(--display);
+      font-size: clamp(28px, 4vw, 54px);
+      color: #1c1c1c;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-meta {
+      font-size: 10px;
+      color: #282828;
+      letter-spacing: 0.15em;
+      line-height: 2;
+    }
+
+    .footer-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1rem;
+    }
+
+    .footer-right a {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: #555;
+      text-decoration: none;
+      text-transform: uppercase;
+      border-bottom: 1px solid #2a2a2a;
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .footer-right a:hover {
+      color: var(--fg);
+      border-color: var(--fg);
+    }
+
+    .footer-made {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: #484848;
+      line-height: 2;
+      text-align: right;
+    }
+
+    .footer-made a {
+      border-bottom: 1px solid #333 !important;
+    }
+
+    .footer-signup {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--bg);
+      background: var(--fg);
+      padding: 10px 22px;
+      border: 1px solid var(--fg);
+      transition: background 0.2s, color 0.2s;
+      margin-top: 0.25rem;
+    }
+
+    .footer-signup:hover {
+      background: transparent !important;
+      color: var(--fg) !important;
+      border-color: var(--fg) !important;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 680px) {
+      .cat-header {
+        grid-template-columns: 36px 1fr 24px;
+        gap: 1rem;
+      }
+      .cat-tally { display: none; }
+      .cat-body { padding-left: calc(36px + 1rem); }
+      #hero-dot { display: none; }
+      .hero-scroll-hint { display: none; }
+
+      #prompt-dock-inner {
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        padding: 0.75rem 0;
+      }
+      #prompt-label { display: none; }
+      #prompt-text { font-size: 10px; width: 100%; order: -1; }
+      #prompt-count { font-size: 9px; }
+      .prompt-btn { padding: 5px 10px; font-size: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section id="hero">
+  <div id="hero-parallax">MUSIC<br>LEXICON</div>
+
+  <div id="hero-dot">
+    <span class="hero-stat-num" id="hero-count">850+</span>
+    <span class="hero-stat-label">Musical Terms</span>
+  </div>
+
+  <p class="hero-kicker">StepAce 1.5 &nbsp;·&nbsp; Prompting Reference &nbsp;·&nbsp; v1.0</p>
+
+  <h1 class="hero-title">MUSIC<br>PROMPTING<br>LEXICON</h1>
+
+  <p class="hero-desc">
+    A comprehensive index of musical terminology for AI music generation.
+    Tempo, texture, harmony, timbre, form, mood, genre, production —
+    across all traditions and styles.
+  </p>
+
+  <div class="hero-scroll-hint">Scroll</div>
+</section>
+
+<!-- ══════════════ SEARCH ══════════════ -->
+<div id="search-bar">
+  <span class="search-glyph">⌕</span>
+  <input id="search" type="text" placeholder="search any term..." autocomplete="off" spellcheck="false">
+  <span id="search-meta"></span>
+</div>
+
+<!-- ══════════════ INDEX ══════════════ -->
+<section id="index-section">
+  <p class="section-label">Term Index</p>
+  <div id="index"></div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <div>
+    <p class="footer-title">STEPACE<br>LEXICON</p>
+    <p class="footer-meta">
+      Music Prompting Reference &nbsp;·&nbsp; v1.0<br>
+      Open source — use freely
+    </p>
+  </div>
+  <div class="footer-right">
+    <p class="footer-made">
+      Made with &lt;3 for&nbsp;
+      <a href="https://graydient.ai" target="_blank" rel="noopener">Graydient.ai ↗</a>
+      &nbsp;&amp;&nbsp;
+      <a href="https://t.me/UnlimitedEditing" target="_blank" rel="noopener">@UnlimitedEditing ↗</a>
+    </p>
+    <a class="footer-signup" href="https://graydient.ai?ref=yjyynzu" target="_blank" rel="noopener">Sign Up ↗</a>
+  </div>
+</footer>
+
+<!-- ══════════════ PROMPT DOCK ══════════════ -->
+<div id="prompt-dock">
+  <div id="prompt-dock-inner">
+    <span id="prompt-label">Prompt</span>
+    <span id="prompt-text"></span>
+    <span id="prompt-count"></span>
+    <button class="prompt-btn" id="copy-btn">Copy</button>
+    <button class="prompt-btn" id="clear-btn">Clear</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const CATS = [
+  {
+    label: "Tempo & Timing",
+    subs: [
+      { name: "Italian tempo markings", terms: ["Larghissimo","Largo","Lento","Grave","Adagio","Adagietto","Andante","Andantino","Moderato","Allegretto","Allegro","Vivace","Vivacissimo","Presto","Prestissimo"] },
+      { name: "Tempo feel", terms: ["BPM","half-time","double-time","free time","rubato","a tempo","ad libitum","tempo giusto","swing feel","straight feel","laid-back","pushing","on the beat","behind the beat","ahead of the beat","pocket","locked-in","rushing","dragging","elastic tempo","human feel"] },
+      { name: "Metric & rhythmic terms", terms: ["time signature","4/4","3/4","6/8","5/4","7/8","9/8","12/8","compound meter","simple meter","mixed meter","polyrhythm","polymeter","hemiola","cross-rhythm","tuplets","triplets","quintuplets","septuplets","metric modulation","isorhythm","additive rhythm","subtractive rhythm"] },
+      { name: "Rhythmic subdivision", terms: ["whole note","half note","quarter note","eighth note","sixteenth note","thirty-second note","dotted note","tied note","syncopation","anticipation","displacement","on-beat","off-beat","backbeat","downbeat","upbeat","anacrusis","pickup"] },
+      { name: "Groove descriptors", terms: ["funky","straight","swung","shuffled","loping","driving","laid-back","bouncy","stiff","mechanical","breathable","elastic","rolling","propulsive","static","stumbling","floating"] }
+    ]
+  },
+  {
+    label: "Dynamics & Volume",
+    subs: [
+      { name: "Classical markings", terms: ["ppp (pianississimo)","pp (pianissimo)","p (piano)","mp (mezzo-piano)","mf (mezzo-forte)","f (forte)","ff (fortissimo)","fff (fortississimo)","sforzando","sfz","fz","fp","rf","rinforzando"] },
+      { name: "Dynamic movement", terms: ["crescendo","decrescendo","diminuendo","swell","fade","fade-in","fade-out","sudden change","terraced dynamics","hairpin","accent","sub-accent","ghost note"] },
+      { name: "Mix & production volume", terms: ["loud","quiet","whispered","thunderous","intimate","punchy","soft","hard","restrained","full-bore","understated","overpowering","balanced","sparse","dense","wall of sound","open","compressed","uncompressed","limited","wide dynamic range","narrow dynamic range"] }
+    ]
+  },
+  {
+    label: "Pitch & Melody",
+    subs: [
+      { name: "Scales & modes", terms: ["major","natural minor","harmonic minor","melodic minor","Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian","pentatonic major","pentatonic minor","blues scale","whole tone","octatonic/diminished","chromatic","Hungarian minor","double harmonic","Lydian dominant","Phrygian dominant","Neapolitan","acoustic scale","bebop scale","in-sen","Hirajoshi","Yo scale","enigmatic scale"] },
+      { name: "Melodic character", terms: ["stepwise","conjunct","disjunct","leaping","ascending","descending","undulating","arch shape","inverted arch","linear","angular","flowing","jagged","lyrical","cantabile","declamatory","recitative","spun-out","motivic","sequenced","scalar","arpeggiated","wide-ranging","narrow-ranging","modal","tonal","atonal","microtonal"] },
+      { name: "Pitch manipulation & ornament", terms: ["vibrato","tremolo","glissando","portamento","slide","bend","pitch bend","quarter-tone","microtone","blue note","flat 7","flat 3","altered notes","chromatic passing tone","neighbor tone","appoggiatura","mordent","trill","turn","grace note","acciaccatura"] }
+    ]
+  },
+  {
+    label: "Harmony & Chords",
+    subs: [
+      { name: "Chord types", terms: ["major triad","minor triad","diminished triad","augmented triad","sus2","sus4","dominant 7th","major 7th","minor 7th","minor-major 7th","half-diminished","fully-diminished","augmented 7th","9th","11th","13th","add9","add11","6th","6/9","power chord","quartal chord","quintal chord","cluster","polychord","extended harmony"] },
+      { name: "Harmonic motion", terms: ["cadence","perfect cadence","plagal cadence","imperfect cadence","interrupted cadence","deceptive cadence","resolution","tension","suspension","pedal point","drone","ostinato","vamp","turnaround","circle of fifths","stepwise bass","chromatic bass","parallel motion","contrary motion","oblique motion","voice leading"] },
+      { name: "Harmonic language", terms: ["diatonic","chromatic","modal","tonal","atonal","polytonal","bitonal","pan-diatonic","quartal","octatonic","functional harmony","non-functional","jazz harmony","impressionist","romantic","expressionist","spectral","just intonation","equal temperament","microtonal","ambient harmony","static harmony","unstable","unresolved","ambiguous"] }
+    ]
+  },
+  {
+    label: "Rhythm & Groove",
+    subs: [
+      { name: "Rhythmic patterns", terms: ["four-on-the-floor","boom-bap","trap","breakbeat","clave","son clave","rumba clave","bossa nova pattern","samba pattern","reggaeton dembow","tresillo","habanera","taiko pattern","Afrobeat pattern","Balkan beat","Gnawa","polyrhythmic","steady pulse","pulse-less","free rhythm","isochronous","non-isochronous"] },
+      { name: "Percussion descriptors", terms: ["punchy","tight","loose","dry","wet","snappy","thuddy","crisp","fat","thin","trashy","washy","sharp","muffled","rimshot","ghost notes","flam","drag","roll","buzz roll","open","closed","half-open","dampened","acoustic","electronic","quantized","unquantized","humanized","glitchy"] }
+    ]
+  },
+  {
+    label: "Texture & Layering",
+    subs: [
+      { name: "Classical texture types", terms: ["monophonic","homophonic","polyphonic","heterophonic","homorhythmic","contrapuntal","fugal","canonic","imitative","non-imitative"] },
+      { name: "Density descriptors", terms: ["dense","sparse","thick","thin","full","bare","layered","single-line","multi-layered","transparent","opaque","busy","clear","cluttered","breathing","spacious","compressed","expansive","minimal","maximalist","wall of sound","chamber-like","orchestral","stripped-back"] },
+      { name: "Layer interaction", terms: ["interlocking","call and response","stacked","parallel","contrary","independent","interdependent","drone + melody","melody + countermelody","pad + lead","punchy + sustained","rhythmic + sustained","arpeggiated + chordal","percussive + melodic","foreground","midground","background","embedded","exposed"] }
+    ]
+  },
+  {
+    label: "Timbre & Tone Color",
+    subs: [
+      { name: "General timbral descriptors", terms: ["bright","dark","warm","cold","thin","rich","full","hollow","nasal","metallic","glassy","wooden","breathy","airy","grainy","smooth","rough","gritty","silky","velvety","harsh","soft","piercing","mellow","sharp","round","pointed","edgy","muddy","clean","dirty","buzzy","reedy","brassy"] },
+      { name: "Spectral qualities", terms: ["harmonic-rich","harmonic-poor","fundamental-heavy","overtone-heavy","odd harmonics","even harmonics","inharmonic","noise-like","sub-heavy","mid-focused","hi-heavy","presence","air frequencies","low-end body","attack transient","sustain body","decay tail"] },
+      { name: "Synthesis & sound design", terms: ["sine wave","sawtooth","square wave","triangle wave","pulse wave","white noise","pink noise","brown noise","FM synthesis","AM synthesis","wavetable","granular","additive","subtractive","physical modeling","sample-based","convolution","ring modulation","bit-crushed","lo-fi","hi-fi","saturated","distorted","clipped","overdriven","tube-saturated"] },
+      { name: "Effects & processing", terms: ["reverb","hall reverb","room reverb","plate reverb","spring reverb","convolution reverb","delay","echo","slapback","ping-pong delay","chorus","flanger","phaser","tremolo","vibrato","overdrive","distortion","fuzz","bit-crusher","sample-rate reduction","compression","expansion","limiting","gating","EQ","low-pass filter","high-pass filter","band-pass filter","notch filter","wah","envelope filter","auto-wah","pitch shifting","harmonizer","vocoder","talkbox","tape saturation","vinyl crackle","wow and flutter","modulation"] }
+    ]
+  },
+  {
+    label: "Articulation & Expression",
+    subs: [
+      { name: "Attack & release", terms: ["staccato","staccatissimo","tenuto","marcato","legato","portato","slurred","accented","sforzando","soft attack","hard attack","plucked","bowed","hammered","tapped","struck","blown","breathed","long attack","short attack","pad attack","sharp decay","long release","gated"] },
+      { name: "Italian expression markings", terms: ["espressivo","dolce","cantabile","con fuoco","con brio","con moto","appassionato","grazioso","maestoso","scherzando","tranquillo","agitato","con anima","lamentoso","giocoso","misterioso","furioso","semplice","brillante","comodo","sostenuto"] },
+      { name: "Phrasing", terms: ["long-breathed","short phrases","fragmented","smooth","choppy","flowing","interrupted","call","response","question phrase","answer phrase","antecedent","consequent","developmental","transitional","cadential","extended phrase","irregular phrase","elided"] }
+    ]
+  },
+  {
+    label: "Form & Structure",
+    subs: [
+      { name: "Classical forms", terms: ["binary (AB)","ternary (ABA)","rondo","sonata form","theme and variations","fugue","passacaglia","chaconne","through-composed","strophic","da capo aria","ground bass"] },
+      { name: "Popular song forms", terms: ["verse","pre-chorus","chorus","bridge","outro","intro","hook","breakdown","build","transition","interlude","coda","tag","vamp","turnaround","A-section","B-section","AABA","ABAB","ABABCB","32-bar form","12-bar blues","16-bar blues","8-bar phrase"] },
+      { name: "Electronic & dance forms", terms: ["drop","build-up","loop","one-shot","stem","layer","fill","riser","stab","swell","filter sweep","white noise sweep","rebound drop","half-time drop"] },
+      { name: "Development techniques", terms: ["repetition","variation","development","fragmentation","augmentation","diminution","inversion","retrograde","transposition","sequence","imitation","canon","stretto","pedal point","motivic development","melodic development","harmonic development","rhythmic development","textural development","gradual layering","gradual stripping","deconstruction"] }
+    ]
+  },
+  {
+    label: "Mood & Atmosphere",
+    subs: [
+      { name: "Emotional tone", terms: ["joyful","melancholic","anxious","serene","triumphant","desolate","hopeful","despairing","nostalgic","futuristic","wistful","yearning","content","ecstatic","mournful","celebratory","meditative","agitated","dreamy","nightmarish","ethereal","grounded","transcendent","romantic","tender","violent","peaceful","unsettling","comforting","alienating","intimate","epic","personal","universal","sacred","profane"] },
+      { name: "Energy level", terms: ["energetic","subdued","frenetic","calm","driving","floating","pulsing","static","surging","ebbing","building","releasing","explosive","implosive","restrained","unleashed","high-energy","low-energy","climactic","anti-climactic","plateauing","ascending energy","descending energy"] },
+      { name: "Atmosphere", terms: ["cinematic","ambient","ominous","warm","cold","claustrophobic","vast","intimate","expansive","underground","open-air","nocturnal","diurnal","urban","rural","industrial","organic","mechanical","alien","familiar","otherworldly","subterranean","celestial","aquatic","psychedelic","surreal","hyper-real","abstract","concrete"] }
+    ]
+  },
+  {
+    label: "Space & Ambience",
+    subs: [
+      { name: "Spatial placement", terms: ["close-mic'd","room-mic'd","distant","near","panned left","panned right","centered","wide","mono","stereo","mid-side","quad","surround","binaural","in-your-head","near field","far field","upfront","recessed","elevated","subterranean"] },
+      { name: "Reverb environment", terms: ["anechoic","dry","slightly roomed","small room","medium room","large room","chamber","church","cathedral","cave","tunnel","plate","hall","stadium","arena","shoebox hall","closet","tiled bathroom","parking garage","open field","forest","underwater","outer space","telephone booth","metal tank"] },
+      { name: "Ambience quality", terms: ["dead","live","resonant","reflective","absorptive","reverberant","echoing","non-reverberant","dense ambience","sparse ambience","natural ambience","synthetic ambience","lo-fi ambience","hi-fi ambience","tape hiss","vinyl crackle","field recording","found sound","noise floor","silence","near-silence","breath","presence"] }
+    ]
+  },
+  {
+    label: "Instrumentation",
+    subs: [
+      { name: "Strings", terms: ["violin","viola","cello","double bass","harp","acoustic guitar","classical guitar","electric guitar","resonator guitar","lap steel","pedal steel","banjo","ukulele","mandolin","sitar","oud","kora","erhu","pipa","koto","shamisen","berimbau","lyra","zither","dulcimer","autoharp"] },
+      { name: "Winds & brass", terms: ["flute","piccolo","alto flute","bass flute","oboe","cor anglais","clarinet","bass clarinet","bassoon","contrabassoon","soprano sax","alto sax","tenor sax","baritone sax","trumpet","flugelhorn","French horn","trombone","bass trombone","tuba","euphonium","cornet","recorder","pan flute","tin whistle","shakuhachi","duduk","ney","shehnai","didgeridoo"] },
+      { name: "Keyboards", terms: ["grand piano","upright piano","prepared piano","Rhodes electric piano","Wurlitzer electric piano","clavinet","harpsichord","pipe organ","Hammond B3","Farfisa organ","Vox organ","mellotron","harmonium","accordion","concertina","melodica","toy piano","celesta","vibraphone (bowed)"] },
+      { name: "Percussion", terms: ["kick drum","snare drum","hi-hat","crash cymbal","ride cymbal","splash cymbal","China cymbal","tom-tom","floor tom","bongo","conga","djembe","cajon","taiko","frame drum","bodhrán","hand pan","tabla","dholak","surdo","pandeiro","shakers","tambourine","guiro","claves","maracas","cowbell","triangle","wind chime","glockenspiel","marimba","vibraphone","xylophone","timpani","gong","singing bowl","steel drum"] },
+      { name: "Electronic & synthesis", terms: ["analog synth","digital synth","modular synth","semi-modular","polyphonic synth","monophonic synth","lead synth","bass synth","pad synth","arp synth","sampler","drum machine","TR-808","TR-909","SP-404","MPC","Theremin","ondes Martenot","stylophone","vocoder","Talkbox","Mellotron","Fairlight CMI","SP-1200","sampled strings","sampled brass","sampled choir"] },
+      { name: "Vocal types", terms: ["soprano","mezzo-soprano","contralto","countertenor","tenor","baritone","bass-baritone","bass","falsetto","head voice","chest voice","mixed voice","belting","crooning","sprechstimme","spoken word","whisper","throat singing","overtone singing","yodeling","scat","rapping","beatboxing","vocalise","unison choir","four-part harmony","a cappella","doubled vocals","layered vocals","vocodered vocals","auto-tuned","pitch-shifted vocals","processed vocals","field-recorded vocals"] }
+    ]
+  },
+  {
+    label: "Genre & Style",
+    subs: [
+      { name: "Classical Western", terms: ["Baroque","Classical","Romantic","Impressionism","Expressionism","Serialism","Minimalism","Spectralism","Neo-Romanticism","Contemporary classical","Chamber","Orchestral","Choral","Opera","Lieder","Symphony","Concerto","String quartet","Early music","Gregorian chant","Polyphony","Madrigal"] },
+      { name: "Jazz & Blues", terms: ["Dixieland","Swing","Bebop","Hard Bop","Cool Jazz","Modal Jazz","Free Jazz","Fusion","Post-bop","Latin Jazz","Afro-Cuban Jazz","Jazz Funk","Soul Jazz","Smooth Jazz","Delta Blues","Chicago Blues","Electric Blues","Texas Blues","Jump Blues","New Orleans Blues","R&B"] },
+      { name: "Rock & Metal", terms: ["Rock and Roll","Classic Rock","Psychedelic Rock","Art Rock","Prog Rock","Krautrock","Punk","Post-Punk","New Wave","Alternative","Indie Rock","Shoegaze","Noise Rock","Grunge","Post-Rock","Math Rock","Heavy Metal","Doom Metal","Sludge","Black Metal","Death Metal","Thrash","Power Metal","Nu-Metal","Stoner Rock","Desert Rock","Drone Metal"] },
+      { name: "Electronic", terms: ["House","Deep House","Tech House","Acid House","Chicago House","Techno","Detroit Techno","Industrial Techno","Ambient Techno","Trance","Progressive Trance","Psytrance","Goa","Drum and Bass","Jungle","Dubstep","Grime","UK Garage","Breakbeat","Big Beat","Electronica","IDM","Ambient","Dark Ambient","Drone","Noise","Glitch","Microsound","Vaporwave","Lo-fi Hip-Hop","Future Bass","Wave","Synthpop","Electro","EBM","Darkwave","Post-Industrial"] },
+      { name: "Hip-Hop & Urban", terms: ["Boom Bap","East Coast","West Coast","Trap","Drill","Cloud Rap","Conscious Hip-Hop","Gangsta Rap","Crunk","Hyphy","Houston Rap","Miami Bass","Memphis Rap","Neo-Soul","Contemporary R&B","Funk","Soul","Motown","Disco"] },
+      { name: "Folk, World & Roots", terms: ["Folk","American Folk","Celtic","Bluegrass","Country","Appalachian","Cajun","Zydeco","Bossa Nova","Samba","Cumbia","Salsa","Merengue","Reggaeton","Reggae","Dub","Dancehall","Afrobeats","Highlife","Jùjú","Mbalax","Gnawa","Raï","Flamenco","Fado","Tango","Milonga","Balkan","Klezmer","Polka","Raga","Carnatic","Hindustani","Gamelan","Mbaqanga","Kwaito","Amapiano"] }
+    ]
+  },
+  {
+    label: "Production & Mixing",
+    subs: [
+      { name: "Mix width & depth", terms: ["stereo width","mono-compatible","wide mix","narrow mix","centered","panned","haas effect","stereo image","depth","front-to-back","ambient send","dry signal","wet signal","parallel processing","series processing","blend","wet/dry ratio"] },
+      { name: "Frequency balance", terms: ["sub bass (20–60Hz)","bass (60–250Hz)","low-mid (250–500Hz)","mid (500Hz–2kHz)","upper-mid (2–5kHz)","presence (5–8kHz)","air (10–20kHz)","boomy","muddy","hollow","honky","nasal","boxy","harsh","sibilant","bright","dark","balanced","thin","full-bodied","bottom-heavy","top-heavy","scooped mid","mid-forward"] },
+      { name: "Compression & dynamics", terms: ["compressed","pumping","breathing","transparent","squashed","limited","open","wide-dynamic","parallel compressed","multi-band compressed","side-chain compressed","ducking","gating","expansion","brick-wall limited","natural decay","sustained","punchy attack","soft attack","fast release","slow release"] },
+      { name: "Lo-fi & vintage", terms: ["tape saturation","tape hiss","vinyl crackle","vinyl warmth","wow and flutter","cassette degradation","AM radio","telephone filter","transistor radio","lo-fi","degraded","aged","worn","nostalgic","retro","vintage","analogue warmth","analogue imperfection","bit-crushed","downsampled","over-compressed","over-driven","feedback","mechanical noise"] },
+      { name: "Spatial effects", terms: ["dry","roomed","reverberant","cavernous","intimate reverb","short reverb","long reverb","pre-delay","early reflections","late reverb","shimmer reverb","reverse reverb","convolution reverb","synthetic reverb","algorithmic reverb","slapback echo","tape echo","dotted eighth delay","quarter-note delay","triplet delay","multi-tap delay","ping-pong delay","feedback delay network"] }
+    ]
+  },
+  {
+    label: "Musical Devices",
+    subs: [
+      { name: "Compositional techniques", terms: ["ostinato","riff","hook","motif","leitmotif","theme","development","recapitulation","coda","fugue","canon","inversion","retrograde","augmentation","diminution","stretto","pedal point","ground bass","passacaglia","chaconne","isorhythm","hocket","polyrhythm","improvisation","through-composition","aleatoric","chance","extended technique"] },
+      { name: "Harmonic devices", terms: ["tonicization","modulation","pivot chord","parallel key","enharmonic modulation","chromatic mediant","Neapolitan 6th","Italian augmented 6th","French augmented 6th","German augmented 6th","mode mixture","borrowed chord","secondary dominant","tritone substitution","chord substitution","reharmonisation","turnaround","deceptive resolution","planing","parallelism"] },
+      { name: "Arrangement techniques", terms: ["doubling","unison","harmonization","counterpoint","obbligato","fill","breakdown","build-up","strip-back","call and response","antiphony","tutti","solo","soli","feature","tacet","stab","hit","swell","orchestration","voice doubling","octave doubling","pad fill","sustain pad","rhythmic comp","melodic comp","chordal comp"] }
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+const indexEl    = document.getElementById('index');
+const searchEl   = document.getElementById('search');
+const searchMeta = document.getElementById('search-meta');
+const heroCount  = document.getElementById('hero-count');
+
+let totalTerms = 0;
+CATS.forEach(c => c.subs.forEach(s => totalTerms += s.terms.length));
+heroCount.textContent = totalTerms + '+';
+
+function build(filter) {
+  const q = (filter || '').toLowerCase().trim();
+  indexEl.innerHTML = '';
+  let shownCats = 0, matchedTerms = 0;
+
+  CATS.forEach((cat, ci) => {
+    let bodyHtml = '';
+    let catCount = 0;
+
+    cat.subs.forEach(sub => {
+      const hits = q ? sub.terms.filter(t => t.toLowerCase().includes(q)) : sub.terms;
+      if (!hits.length) return;
+      catCount += hits.length;
+      bodyHtml += `<p class="subhead">${sub.name}</p><div class="terms">`;
+      hits.forEach(t => {
+        const cls = q && t.toLowerCase().includes(q) ? ' hi' : '';
+        bodyHtml += `<span class="term${cls}">${t}</span>`;
+      });
+      bodyHtml += `</div>`;
+    });
+
+    if (!catCount) return;
+    shownCats++;
+    matchedTerms += catCount;
+
+    const num = String(ci + 1).padStart(2, '0');
+    const div = document.createElement('div');
+    div.className = 'cat' + (q ? ' open' : '');
+    div.innerHTML = `
+      <div class="cat-header">
+        <span class="cat-num">${num}</span>
+        <span class="cat-name">${cat.label.toUpperCase()}</span>
+        <span class="cat-tally">${catCount}&nbsp;TERMS</span>
+        <span class="cat-toggle">+</span>
+      </div>
+      <div class="cat-body">${bodyHtml}</div>`;
+    div.querySelector('.cat-header').addEventListener('click', () => div.classList.toggle('open'));
+    indexEl.appendChild(div);
+  });
+
+  if (!shownCats) {
+    indexEl.innerHTML = `<p class="no-results">No terms found for "${filter}"</p>`;
+  }
+
+  searchMeta.textContent = q
+    ? `${matchedTerms} match${matchedTerms !== 1 ? 'es' : ''} across ${shownCats} categor${shownCats !== 1 ? 'ies' : 'y'}`
+    : `${totalTerms} terms · ${CATS.length} categories`;
+}
+
+build('');
+searchEl.addEventListener('input', () => build(searchEl.value));
+
+/* ═══════════════════════════════════════
+   PARALLAX + SCROLL PROGRESS
+═══════════════════════════════════════ */
+const parallaxEl  = document.getElementById('hero-parallax');
+const progressBar = document.getElementById('progress-bar');
+const heroEl      = document.getElementById('hero');
+let rafPending    = false;
+
+function onScroll() {
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(() => {
+    const sy    = window.pageYOffset;
+    const total = document.body.scrollHeight - window.innerHeight;
+    const pct   = total > 0 ? (sy / total) * 100 : 0;
+
+    progressBar.style.width = pct + '%';
+
+    // Parallax: bg text drifts at 38% of scroll speed
+    if (sy < heroEl.offsetHeight * 1.5) {
+      parallaxEl.style.transform = `translateY(${sy * 0.38}px)`;
+    }
+
+    rafPending = false;
+  });
+}
+
+/* ═══════════════════════════════════════
+   PROMPT BOX
+═══════════════════════════════════════ */
+const selectedTerms = new Set();
+const promptDock    = document.getElementById('prompt-dock');
+const promptText    = document.getElementById('prompt-text');
+const promptCount   = document.getElementById('prompt-count');
+const copyBtn       = document.getElementById('copy-btn');
+const clearBtn      = document.getElementById('clear-btn');
+
+function updateDock() {
+  const arr = Array.from(selectedTerms);
+  if (arr.length === 0) {
+    promptDock.classList.remove('visible');
+    return;
+  }
+  promptDock.classList.add('visible');
+  promptText.textContent  = arr.join(', ');
+  promptCount.textContent = arr.length + (arr.length === 1 ? ' term' : ' terms');
+}
+
+function attachTermClicks() {
+  document.querySelectorAll('.term').forEach(el => {
+    // Avoid double-binding
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    if (selectedTerms.has(el.textContent)) el.classList.add('selected');
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const t = el.textContent;
+      if (selectedTerms.has(t)) {
+        selectedTerms.delete(t);
+        el.classList.remove('selected');
+      } else {
+        selectedTerms.add(t);
+        el.classList.add('selected');
+      }
+      updateDock();
+    });
+  });
+}
+
+// Re-attach after every search rebuild
+searchEl.addEventListener('input', () => {
+  requestAnimationFrame(attachTermClicks);
+});
+
+// Copy button
+copyBtn.addEventListener('click', () => {
+  const text = Array.from(selectedTerms).join(', ');
+  const finish = () => {
+    copyBtn.textContent = 'Copied!';
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy';
+      copyBtn.classList.remove('copied');
+    }, 1800);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(finish).catch(() => fallbackCopy(text, finish));
+  } else {
+    fallbackCopy(text, finish);
+  }
+});
+
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+  cb();
+}
+
+// Clear button
+clearBtn.addEventListener('click', () => {
+  selectedTerms.clear();
+  document.querySelectorAll('.term.selected').forEach(el => el.classList.remove('selected'));
+  updateDock();
+});
+
+// Initial attach after first build
+requestAnimationFrame(attachTermClicks);
+</script>
+</body>
+</html>
